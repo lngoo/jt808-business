@@ -54,10 +54,10 @@ public class Resovler implements ApplicationRunner {
     }
 
     private void msgConsume(String data) {
+        System.out.println("###  收到信息：" + data);
         Message msg = JsonUtils.toObj(Message.class, data);
         Integer type = msg.getType();
 
-        System.out.println("###  收到信息：" + data);
         switch(type){
             case(MessageId.终端注册) :
                 doClientRegister(msg);
@@ -85,7 +85,8 @@ public class Resovler implements ApplicationRunner {
 
         // 鉴权应答
         CommonResult commonResult = new CommonResult(MessageId.终端鉴权, msg.getSerialNumber() ,CommonResult.Success);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(commonResult));
+        Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(result));
     }
 
     private void doClientPositionReport(Message msg) {
@@ -98,13 +99,19 @@ public class Resovler implements ApplicationRunner {
         } else {
            // do something
         }
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(commonResult));
+
+        Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(result));
     }
 
     private boolean isAuthedClient(String mobileNum) {
         return Cache.mapAuthed.contains(mobileNum);
     }
 
+    /**
+     * 终端注册
+     * @param msg
+     */
     private void doClientRegister(Message msg) {
         String mobileNum = msg.getMobileNumber();
         AbstractBody body = msg.getBody();
@@ -115,7 +122,8 @@ public class Resovler implements ApplicationRunner {
 
         // do something with body
 
-        RegisterResult result = new RegisterResult(msg.getSerialNumber(), RegisterResult.Success, authKey);
+        RegisterResult registerResult = new RegisterResult(msg.getSerialNumber(), RegisterResult.Success, authKey);
+        Message result = new Message(MessageId.平台通用应答, mobileNum, registerResult);
         stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(result));
     }
 }
