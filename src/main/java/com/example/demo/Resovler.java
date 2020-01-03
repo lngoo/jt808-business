@@ -1,13 +1,13 @@
 package com.example.demo;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.ant.jt808.base.common.MessageId;
-import com.ant.jt808.base.dto.jt808.Authentication;
-import com.ant.jt808.base.dto.jt808.CommonResult;
-import com.ant.jt808.base.dto.jt808.RegisterResult;
+import com.ant.jt808.base.dto.jt808.*;
 import com.ant.jt808.base.dto.jt808.basics.Message;
 import com.ant.jt808.base.message.AbstractBody;
 import com.example.demo.cache.Cache;
-import com.example.demo.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,8 +38,9 @@ public class Resovler implements ApplicationRunner {
                             String data = stringRedisTemplate.opsForList().rightPop(redisRequestKey);
                             if (StringUtils.isEmpty(data)) {
                                 // 暂无数据，等待3秒
-                                System.out.println("%%% no redis data.sleep 3 seconds...");
+                                System.out.println("%%% no redis request data.sleep 3 seconds...");
                                 Thread.sleep(3000);
+                                continue;
                             }
 
                             // 消费消息
@@ -55,27 +56,29 @@ public class Resovler implements ApplicationRunner {
 
     private void msgConsume(String data) {
         System.out.println("###  收到信息：" + data);
-        Message msg = JsonUtils.toObj(Message.class, data);
-        Integer type = msg.getType();
+
+        JSONObject msgObj = JSON.parseObject(data);
+        Integer type = msgObj.getInteger("type");
 
         switch(type){
             case(MessageId.终端注册) :
-                doClientRegister(msg);
+                doClientRegister(data);
                 break;
 //            case(MessageId.终端心跳) :  由antMsger处理
 //                doClientHeart(msg);
 //                break;
             case(MessageId.位置信息汇报) :
-                doClientPositionReport(msg);
+                doClientPositionReport(data);
                 break;
             case(MessageId.终端鉴权) :
-                doClientAuthentication(msg);
+                doClientAuthentication(data);
                 break;
             default:
         }
     }
 
-    private void doClientAuthentication(Message msg) {
+    private void doClientAuthentication(String data) {
+        Message<Authentication> msg = JSON.parseObject(data, new TypeReference<Message<Authentication>>() {});
         String mobileNum = msg.getMobileNumber();
         Authentication authentication = (Authentication) msg.getBody();
         String token = authentication.getToken();
@@ -86,10 +89,11 @@ public class Resovler implements ApplicationRunner {
         // 鉴权应答
         CommonResult commonResult = new CommonResult(MessageId.终端鉴权, msg.getSerialNumber() ,CommonResult.Success);
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(result));
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JSON.toJSONString(result));
     }
 
-    private void doClientPositionReport(Message msg) {
+    private void doClientPositionReport(String data) {
+        Message<PositionReport> msg = JSON.parseObject(data, new TypeReference<Message<PositionReport>>() {});
         String mobileNum = msg.getMobileNumber();
         CommonResult commonResult = new CommonResult(MessageId.位置信息汇报, msg.getSerialNumber(), CommonResult.Success);
 
@@ -101,7 +105,7 @@ public class Resovler implements ApplicationRunner {
         }
 
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(result));
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JSON.toJSONString(result));
     }
 
     private boolean isAuthedClient(String mobileNum) {
@@ -110,9 +114,9 @@ public class Resovler implements ApplicationRunner {
 
     /**
      * 终端注册
-     * @param msg
      */
-    private void doClientRegister(Message msg) {
+    private void doClientRegister(String data) {
+        Message<Register> msg = JSON.parseObject(data, new TypeReference<Message<Register>>() {});
         String mobileNum = msg.getMobileNumber();
         AbstractBody body = msg.getBody();
 
@@ -124,6 +128,6 @@ public class Resovler implements ApplicationRunner {
 
         RegisterResult registerResult = new RegisterResult(msg.getSerialNumber(), RegisterResult.Success, authKey);
         Message result = new Message(MessageId.平台通用应答, mobileNum, registerResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JsonUtils.toJson(result));
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JSON.toJSONString(result));
     }
 }
