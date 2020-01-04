@@ -130,11 +130,12 @@ public class Resovler implements ApplicationRunner {
 //        String authKey = String.valueOf(System.currentTimeMillis());
         String authKey = mobileNum + "_authed";
         Cache.mapRegister.put(authKey, mobileNum);
+        Cache.mapAuthed.add(mobileNum);
 
         // do something with body
 
         RegisterResult registerResult = new RegisterResult(msg.getSerialNumber(), RegisterResult.Success, authKey);
-        Message result = new Message(MessageId.平台通用应答, mobileNum, registerResult);
+        Message result = new Message(MessageId.终端注册应答, mobileNum, registerResult);
 
         stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
     }
