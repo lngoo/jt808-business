@@ -86,12 +86,15 @@ public class Resovler implements ApplicationRunner {
         String mobileNum = msg.getMobileNumber();
         Authentication authentication = (Authentication) msg.getBody();
         String token = authentication.getToken();
-        if (StringUtils.equalsIgnoreCase(Cache.mapRegister.get(token), mobileNum)) {
-            Cache.mapAuthed.add(mobileNum);
-        }
-
         // 鉴权应答
         CommonResult commonResult = new CommonResult(MessageId.终端鉴权, msg.getSerialNumber() ,CommonResult.Success);
+        if (StringUtils.equalsIgnoreCase(Cache.mapRegister.get(token), mobileNum)) {
+            Cache.mapAuthed.add(mobileNum);
+        } else {
+            commonResult.setResultCode(CommonResult.Fial);
+        }
+
+
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
         stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
     }
