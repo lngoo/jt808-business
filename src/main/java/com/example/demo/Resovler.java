@@ -8,6 +8,8 @@ import com.ant.jt808.base.dto.jt808.*;
 import com.ant.jt808.base.dto.jt808.basics.Message;
 import com.ant.jt808.base.message.AbstractBody;
 import com.example.demo.cache.Cache;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,8 @@ public class Resovler implements ApplicationRunner {
 
     @Value("${redis.key.queue.response}")
     String redisResponseKey;
+
+    private XStream xstream = new XStream(new StaxDriver());
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -89,7 +93,7 @@ public class Resovler implements ApplicationRunner {
         // 鉴权应答
         CommonResult commonResult = new CommonResult(MessageId.终端鉴权, msg.getSerialNumber() ,CommonResult.Success);
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JSON.toJSONString(result));
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
     }
 
     private void doClientPositionReport(String data) {
@@ -105,7 +109,7 @@ public class Resovler implements ApplicationRunner {
         }
 
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JSON.toJSONString(result));
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
     }
 
     private boolean isAuthedClient(String mobileNum) {
@@ -128,6 +132,7 @@ public class Resovler implements ApplicationRunner {
 
         RegisterResult registerResult = new RegisterResult(msg.getSerialNumber(), RegisterResult.Success, authKey);
         Message result = new Message(MessageId.平台通用应答, mobileNum, registerResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, JSON.toJSONString(result));
+
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
     }
 }
