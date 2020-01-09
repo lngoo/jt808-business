@@ -20,8 +20,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.yzh</groupId>
-            <artifactId>jt808-server-base</artifactId>
+            <groupId>com.ant</groupId>
+            <artifactId>ant-msger-base</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
