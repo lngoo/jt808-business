@@ -6,7 +6,9 @@ import com.alibaba.fastjson.TypeReference;
 import com.ant.msger.base.common.MessageId;
 import com.ant.msger.base.dto.jt808.*;
 import com.ant.msger.base.dto.jt808.basics.Message;
+import com.ant.msger.base.enums.TopicType;
 import com.ant.msger.base.message.AbstractBody;
+import com.ant.msger.base.message.AntSendChannelMsg;
 import com.example.demo.cache.Cache;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -96,7 +98,9 @@ public class Resovler implements ApplicationRunner {
 
 
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
+        result.setDelimiter(msg.getDelimiter());
+        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(TopicType.TO_DEVICE, null, result);
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(sendChannelMsg));
     }
 
     private void doClientPositionReport(String data) {
@@ -112,7 +116,9 @@ public class Resovler implements ApplicationRunner {
         }
 
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
+        result.setDelimiter(msg.getDelimiter());
+        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(TopicType.TO_DEVICE, null, result);
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(sendChannelMsg));
     }
 
     private boolean isAuthedClient(String mobileNum) {
@@ -136,7 +142,9 @@ public class Resovler implements ApplicationRunner {
 
         RegisterResult registerResult = new RegisterResult(msg.getSerialNumber(), RegisterResult.Success, authKey);
         Message result = new Message(MessageId.终端注册应答, mobileNum, registerResult);
+        result.setDelimiter(msg.getDelimiter());
 
-        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(result));
+        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(TopicType.TO_DEVICE, null, result);
+        stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(sendChannelMsg));
     }
 }
