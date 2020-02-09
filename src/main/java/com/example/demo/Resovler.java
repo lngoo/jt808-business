@@ -6,7 +6,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.ant.msger.base.common.MessageId;
 import com.ant.msger.base.dto.jt808.*;
 import com.ant.msger.base.dto.jt808.basics.Message;
-import com.ant.msger.base.enums.TopicType;
+import com.ant.msger.base.enums.SendType;
 import com.ant.msger.base.message.AbstractBody;
 import com.ant.msger.base.message.AntSendChannelMsg;
 import com.example.demo.cache.Cache;
@@ -36,27 +36,27 @@ public class Resovler implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         new Thread(
-            new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true){
-                            String data = stringRedisTemplate.opsForList().rightPop(redisRequestKey);
-                            if (StringUtils.isEmpty(data)) {
-                                // 暂无数据，等待3秒
-                                System.out.println("%%% no redis request data.sleep 3 seconds...");
-                                Thread.sleep(3000);
-                                continue;
-                            }
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            while (true) {
+                                String data = stringRedisTemplate.opsForList().rightPop(redisRequestKey);
+                                if (StringUtils.isEmpty(data)) {
+                                    // 暂无数据，等待3秒
+                                    System.out.println("%%% no redis request data.sleep 3 seconds...");
+                                    Thread.sleep(3000);
+                                    continue;
+                                }
 
-                            // 消费消息
-                            msgConsume(data);
+                                // 消费消息
+                                msgConsume(data);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
-            }
         ).start();
     }
 
@@ -66,17 +66,17 @@ public class Resovler implements ApplicationRunner {
         JSONObject msgObj = JSON.parseObject(data);
         Integer type = msgObj.getInteger("type");
 
-        switch(type){
-            case(MessageId.终端注册) :
+        switch (type) {
+            case (MessageId.终端注册):
                 doClientRegister(data);
                 break;
 //            case(MessageId.终端心跳) :  由antMsger处理
 //                doClientHeart(msg);
 //                break;
-            case(MessageId.位置信息汇报) :
+            case (MessageId.位置信息汇报):
                 doClientPositionReport(data);
                 break;
-            case(MessageId.终端鉴权) :
+            case (MessageId.终端鉴权):
                 doClientAuthentication(data);
                 break;
             default:
@@ -84,12 +84,13 @@ public class Resovler implements ApplicationRunner {
     }
 
     private void doClientAuthentication(String data) {
-        Message<Authentication> msg = JSON.parseObject(data, new TypeReference<Message<Authentication>>() {});
+        Message<Authentication> msg = JSON.parseObject(data, new TypeReference<Message<Authentication>>() {
+        });
         String mobileNum = msg.getMobileNumber();
         Authentication authentication = (Authentication) msg.getBody();
         String token = authentication.getToken();
         // 鉴权应答
-        CommonResult commonResult = new CommonResult(MessageId.终端鉴权, msg.getSerialNumber() ,CommonResult.Success);
+        CommonResult commonResult = new CommonResult(MessageId.终端鉴权, msg.getSerialNumber(), CommonResult.Success);
         if (StringUtils.equalsIgnoreCase(Cache.mapRegister.get(token), mobileNum)) {
             Cache.mapAuthed.add(mobileNum);
         } else {
@@ -99,12 +100,13 @@ public class Resovler implements ApplicationRunner {
 
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
         result.setDelimiter(msg.getDelimiter());
-        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(TopicType.TO_DEVICE, null, result);
+        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(SendType.TO_SESSION, null, result);
         stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(sendChannelMsg));
     }
 
     private void doClientPositionReport(String data) {
-        Message<PositionReport> msg = JSON.parseObject(data, new TypeReference<Message<PositionReport>>() {});
+        Message<PositionReport> msg = JSON.parseObject(data, new TypeReference<Message<PositionReport>>() {
+        });
         String mobileNum = msg.getMobileNumber();
         CommonResult commonResult = new CommonResult(MessageId.位置信息汇报, msg.getSerialNumber(), CommonResult.Success);
 
@@ -112,12 +114,12 @@ public class Resovler implements ApplicationRunner {
         if (!isAuthedClient(mobileNum)) {
             commonResult.setResultCode(CommonResult.Fial);
         } else {
-           // do something
+            // do something
         }
 
         Message result = new Message(MessageId.平台通用应答, mobileNum, commonResult);
         result.setDelimiter(msg.getDelimiter());
-        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(TopicType.TO_DEVICE, null, result);
+        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(SendType.TO_SESSION, null, result);
         stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(sendChannelMsg));
     }
 
@@ -129,7 +131,8 @@ public class Resovler implements ApplicationRunner {
      * 终端注册
      */
     private void doClientRegister(String data) {
-        Message<Register> msg = JSON.parseObject(data, new TypeReference<Message<Register>>() {});
+        Message<Register> msg = JSON.parseObject(data, new TypeReference<Message<Register>>() {
+        });
         String mobileNum = msg.getMobileNumber();
         AbstractBody body = msg.getBody();
 
@@ -144,7 +147,7 @@ public class Resovler implements ApplicationRunner {
         Message result = new Message(MessageId.终端注册应答, mobileNum, registerResult);
         result.setDelimiter(msg.getDelimiter());
 
-        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(TopicType.TO_DEVICE, null, result);
+        AntSendChannelMsg sendChannelMsg = new AntSendChannelMsg(SendType.TO_SESSION, null, result);
         stringRedisTemplate.opsForList().leftPush(redisResponseKey, xstream.toXML(sendChannelMsg));
     }
 }
