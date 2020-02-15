@@ -1,0 +1,14 @@
+syntax = "proto3";
+option java_package = "com.antnest.msger.proto";
+option java_outer_classname = "ProtoAddition";
+import "google/protobuf/any.proto";
+
+message PositionAttribute {
+    int32 id = 1; //参数ID
+    int32 length = 2; //参数长度
+    bytes bytesValue = 3; // 参数值
+}
+
+message ListPositionAttribute {
+    repeated PositionAttribute ele = 1;
+}

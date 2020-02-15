@@ -1,0 +1,77 @@
+syntax = "proto3";
+option java_package = "com.antnest.msger.proto";
+option java_outer_classname = "ProtoMain";
+import "google/protobuf/any.proto";
+import "messageAddition.proto";
+
+message Message {
+    string protocolType = 1; // 协议类型 Jt808、AntIM等
+    int32 cmd = 2; // 消息ID
+    string userAlias = 3;
+    int32 serialNumber = 4;
+
+    string msgerId = 5; // msgerID 请求通道会携带
+    string sessionId = 6; // 请求通道会携带
+    /*
+    *1)	toSession通道：为目标sessionId
+    *2)	toUser通道:目标user别名
+    *3)	toTopic通道：目标订阅主题Id
+    */
+    string sendTo = 7;
+    google.protobuf.Any msgBody = 8;
+}
+
+/*
+* 通用应答
+*/
+message CommonResult {
+    int32 flowId = 1; // 应答流水号
+    int32 replyId = 2; // 应答ID
+    int32 resultCode = 3; // 应答结果
+}
+
+/*
+* 终端注册
+*/
+message Register {
+    int32 provinceId = 1; // 省域ID
+    int32 cityId = 2; // 市县域ID
+    string manufacturerId = 3; // 制造商ID
+    string terminalType = 4; // 终端型号
+    string terminalId = 5; // 终端ID
+    int32 licensePlateColor = 6; // 车牌颜色
+    string licensePlate = 7; // 车牌
+}
+
+/*
+* 终端注册应答
+*/
+message RegisterResult {
+    int32 serialNumber = 1; // 应答流水号
+    int32 resultCode = 2; // 结果
+    string token = 3; // 鉴权码
+}
+
+/*
+* 终端鉴权
+*/
+message Authentication {
+    string token = 1; // 鉴权码
+}
+
+/*
+* 位置信息汇报
+*/
+message PositionReport {
+    int32 warningMark = 1; // 报警标志
+    int32 status = 2; // 状态
+    int32 latitude = 3; // 纬度
+    int32 longitude = 4; // 经度
+    int32 altitude = 5; // 海拔
+    int32 speed = 6; // 速度
+    int32 direction = 7; // 方向
+    string dateTime = 8; // 时间
+    ListPositionAttribute positionAttributes = 9; // 位置附加信息
+}
+
+
