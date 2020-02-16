@@ -46,11 +46,9 @@ class DemoApplicationTests {
 
     /**
      * 发送任务:add
-     *
-     * @throws Exception
      */
     @Test
-    void sendTask() throws Exception {
+    void sendAddTask() throws Exception {
         List<PersistenceObject> list = new ArrayList<>();
         list.add(new TopicUser("qunliao", "user1", null));
         list.add(new TopicUser("qunliao", "user2", null));
@@ -69,5 +67,44 @@ class DemoApplicationTests {
         System.out.println("finished..");
     }
 
+    /**
+     * 发送任务:update
+     */
+    @Test
+    void sendUpdateTask() throws Exception {
+        List<PersistenceObject> list = new ArrayList<>();
+        list.add(new TopicUser("qunliao", "user1", DateUtils.addDays(new Date(), 1)));
+        list.add(new TopicUser("qunliao", "user2", DateUtils.addDays(new Date(), 2)));
+        MsgerTaskMsg msg = new MsgerTaskMsg(OperateType.UPDATE, SubjectType.TOPIC_USER, list);
 
+        String json = JSONObject.toJSONStringWithDateFormat(msg, "yyyy-MM-dd HH:mm:ss");
+        System.out.println(json);
+
+        byte[] bytes = json.getBytes("UTF-8");
+
+        redisTemplate.setValueSerializer(null);
+        redisTemplate.setEnableDefaultSerializer(false);
+        redisTemplate.convertAndSend(redisKeyTask, bytes);
+        System.out.println("finished..");
+    }
+
+    /**
+     * 发送任务:delete
+     */
+    @Test
+    void sendDeleteTask() throws Exception {
+        List<PersistenceObject> list = new ArrayList<>();
+        list.add(new TopicUser("qunliao", null, null));
+        MsgerTaskMsg msg = new MsgerTaskMsg(OperateType.DELETE, SubjectType.TOPIC_USER, list);
+
+        String json = JSONObject.toJSONStringWithDateFormat(msg, "yyyy-MM-dd HH:mm:ss");
+        System.out.println(json);
+
+        byte[] bytes = json.getBytes("UTF-8");
+
+        redisTemplate.setValueSerializer(null);
+        redisTemplate.setEnableDefaultSerializer(false);
+        redisTemplate.convertAndSend(redisKeyTask, bytes);
+        System.out.println("finished..");
+    }
 }
