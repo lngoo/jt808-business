@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
-class DemoApplicationTests {
+class SendTaskTests {
 
     @Value("${redis.key.queue.response}")
     private String redisKeyResponse;
@@ -50,8 +50,8 @@ class DemoApplicationTests {
     @Test
     void sendAddTask() throws Exception {
         List<PersistenceObject> list = new ArrayList<>();
-        list.add(new TopicUser("qunliao", "user1", null));
-        list.add(new TopicUser("qunliao", "user2", null));
+        list.add(new TopicUser("qunliao", "12345678913888888888", null));
+        list.add(new TopicUser("qunliao", "12345678913888889999", null));
         list.add(new TopicUser("qunliao", "user3", new Date()));
         list.add(new TopicUser("qunliao", "user4", DateUtils.addMinutes(new Date(), 5)));
         MsgerTaskMsg msg = new MsgerTaskMsg(OperateType.ADD, SubjectType.TOPIC_USER, list);
@@ -73,8 +73,8 @@ class DemoApplicationTests {
     @Test
     void sendUpdateTask() throws Exception {
         List<PersistenceObject> list = new ArrayList<>();
-        list.add(new TopicUser("qunliao", "user1", DateUtils.addDays(new Date(), 1)));
-        list.add(new TopicUser("qunliao", "user2", DateUtils.addDays(new Date(), 2)));
+        list.add(new TopicUser("qunliao", "12345678913888888888", DateUtils.addDays(new Date(), 1)));
+        list.add(new TopicUser("qunliao", "12345678913888889999", DateUtils.addDays(new Date(), 2)));
         MsgerTaskMsg msg = new MsgerTaskMsg(OperateType.UPDATE, SubjectType.TOPIC_USER, list);
 
         String json = JSONObject.toJSONStringWithDateFormat(msg, "yyyy-MM-dd HH:mm:ss");
