@@ -74,4 +74,15 @@ message PositionReport {
     ListPositionAttribute positionAttributes = 9; // 位置附加信息
 }
 
+/*
+* IM消息
+*/
+message IMMsg {
+    int32 sendType = 1; //发送类型：0-用户，1-Topic
+    string sendTo = 2; //发送给
+    string sendUserAlias = 3; // 发送人别名userAlias
+    string sendUserName = 4; // 发送人名称
+    string msg = 5; // 消息内容
+}
+
 

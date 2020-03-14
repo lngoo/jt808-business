@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.sub.RequestIMSubscriber;
 import com.example.demo.sub.RequestJt808Subscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,8 @@ public class RedisMessageSubConfig {
     @Value("${redis.key.queue.request.jt808}")
     private String redisKeyRequestJt808;
 
+    @Value("${redis.key.queue.request.im}")
+    private String redisKeyRequestIM;
 
     /**
      * 创建连接工厂
@@ -28,12 +31,13 @@ public class RedisMessageSubConfig {
      */
     @Bean
     public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                                   MessageListenerAdapter listenerAdapter) {
+                                                   MessageListenerAdapter listenerAdapter,
+                                                   MessageListenerAdapter listenerAdapterIm) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         //接受消息的key
         container.addMessageListener(listenerAdapter, new ChannelTopic(redisKeyRequestJt808));
-//        container.addMessageListener(listenerAdapter, new PatternTopic("phone"));
+        container.addMessageListener(listenerAdapterIm, new ChannelTopic(redisKeyRequestIM));
 
         return container;
     }
@@ -49,11 +53,21 @@ public class RedisMessageSubConfig {
         return new MessageListenerAdapter(subscriber);
     }
 
+    @Bean
+    public MessageListenerAdapter listenerAdapterIm(RequestIMSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber);
+    }
+
     /**
      * @return
      */
     @Bean
     public RequestJt808Subscriber receiver() {
         return new RequestJt808Subscriber();
+    }
+
+    @Bean
+    public RequestIMSubscriber receiverIm() {
+        return new RequestIMSubscriber();
     }
 }
