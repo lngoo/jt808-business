@@ -133,13 +133,14 @@ public class RequestIMSubscriber implements MessageListener {
         String sendTo = imMsg.getSendTo();
         String msg = imMsg.getMsg();
         String sendUserAlias = imMsg.getSendUserAlias();
-        String sendUserName = imMsg.getSendUserName();
 
         // 消息
         ProtoMain.IMMsg.Builder builder = ProtoMain.IMMsg.newBuilder();
         builder.setMsg(msg);
         builder.setSendUserAlias(sendUserAlias);
-        builder.setSendUserName(sendUserName);
+        builder.setSendType(imMsg.getSendType());
+        builder.setSendTime(imMsg.getSendTime());
+        builder.setMsgId(imMsg.getMsgId());
         ProtoMain.IMMsg imMsg1 = builder.build();
 
         ProtoMain.Message.Builder mBuilder = ProtoMain.Message.newBuilder();
@@ -160,13 +161,14 @@ public class RequestIMSubscriber implements MessageListener {
         String sendTo = imMsg.getSendTo();
         String msg = imMsg.getMsg();
         String sendUserAlias = imMsg.getSendUserAlias();
-        String sendUserName = imMsg.getSendUserName();
 
         // 消息
         ProtoMain.IMMsg.Builder builder = ProtoMain.IMMsg.newBuilder();
         builder.setMsg(msg);
         builder.setSendUserAlias(sendUserAlias);
-        builder.setSendUserName(sendUserName);
+        builder.setSendType(imMsg.getSendType());
+        builder.setSendTime(imMsg.getSendTime());
+        builder.setMsgId(imMsg.getMsgId());
         ProtoMain.IMMsg imMsg1 = builder.build();
 
         ProtoMain.Message.Builder mBuilder = ProtoMain.Message.newBuilder();

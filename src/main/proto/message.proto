@@ -81,8 +81,10 @@ message IMMsg {
     int32 sendType = 1; //发送类型：0-用户，1-Topic
     string sendTo = 2; //发送给
     string sendUserAlias = 3; // 发送人别名userAlias
-    string sendUserName = 4; // 发送人名称
-    string msg = 5; // 消息内容
+    string sendTime = 4; // 发送时间
+    int32 msgType = 5; // msgType
+    string msgId = 6; // msgId
+    string msg = 7; // 消息内容
 }
 
 
