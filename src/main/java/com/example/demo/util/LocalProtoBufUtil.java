@@ -1,8 +1,8 @@
 package com.example.demo.util;
 
-import com.ant.msger.base.dto.jt808.*;
-import com.ant.msger.base.message.AbstractBody;
-import com.ant.msger.base.message.MessageExternal;
+import com.antnest.msger.core.dto.jt808.*;
+import com.antnest.msger.core.message.AbstractBody;
+import com.antnest.msger.core.message.MessageExternal;
 import com.antnest.msger.proto.ProtoMain;
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;

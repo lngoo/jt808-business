@@ -1,26 +1,14 @@
 package com.example.demo;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.ant.msger.base.common.MessageId;
-import com.ant.msger.base.dto.jt808.CommonResult;
-import com.ant.msger.base.dto.persistence.PersistenceObject;
-import com.ant.msger.base.dto.persistence.TopicUser;
-import com.ant.msger.base.enums.OperateType;
-import com.ant.msger.base.enums.SubjectType;
-import com.ant.msger.base.message.MsgerTaskMsg;
+import com.antnest.msger.core.common.MessageId;
+import com.antnest.msger.core.dto.jt808.CommonResult;
 import com.antnest.msger.proto.ProtoMain;
 import com.google.protobuf.Any;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @SpringBootTest
 class Send2UserTopicTests {

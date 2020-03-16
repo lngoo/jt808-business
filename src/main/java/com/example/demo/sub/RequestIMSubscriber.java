@@ -1,9 +1,9 @@
 package com.example.demo.sub;
 
-import com.ant.msger.base.common.MessageId;
-import com.ant.msger.base.dto.jt808.CommonResult;
-import com.ant.msger.base.dto.jt808.IMMsg;
-import com.ant.msger.base.message.MessageExternal;
+import com.antnest.msger.core.common.MessageId;
+import com.antnest.msger.core.dto.jt808.CommonResult;
+import com.antnest.msger.core.dto.jt808.IMMsg;
+import com.antnest.msger.core.message.MessageExternal;
 import com.antnest.msger.proto.ProtoMain;
 import com.example.demo.cache.Cache;
 import com.example.demo.util.LocalProtoBufUtil;
@@ -114,7 +114,7 @@ public class RequestIMSubscriber implements MessageListener {
             protocolMap.put("Jt808", 0x7e);
             protocolMap.put("AntIM", 0x7a);
 //            com.ant.msger.base.dto.jt808.basics.Message message2 = MessageConvertUtil.toInternal(external, GlobalConfig.protocolBusinessMap());
-            com.ant.msger.base.dto.jt808.basics.Message message2 = MessageConvertUtil.toInternal(external, protocolMap);
+            com.antnest.msger.core.dto.jt808.basics.Message message2 = MessageConvertUtil.toInternal(external, protocolMap);
             if (message2.getBody() instanceof IMMsg) {
                 IMMsg imMsg = (IMMsg) message2.getBody();
                 int sendType = imMsg.getSendType();

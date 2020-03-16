@@ -1,10 +1,10 @@
 package com.example.demo;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ant.msger.base.dto.persistence.TopicUserData;
-import com.ant.msger.base.enums.OperateType;
-import com.ant.msger.base.enums.SubjectType;
-import com.ant.msger.base.message.MsgerTaskMsg;
+import com.antnest.msger.core.dto.persistence.TopicUserData;
+import com.antnest.msger.core.enums.OperateType;
+import com.antnest.msger.core.enums.SubjectType;
+import com.antnest.msger.core.message.MsgerTaskMsg;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

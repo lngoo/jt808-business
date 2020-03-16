@@ -1,7 +1,7 @@
 package com.example.demo.sub;
 
-import com.ant.msger.base.common.MessageId;
-import com.ant.msger.base.dto.jt808.CommonResult;
+import com.antnest.msger.core.common.MessageId;
+import com.antnest.msger.core.dto.jt808.CommonResult;
 import com.antnest.msger.proto.ProtoMain;
 import com.example.demo.cache.Cache;
 import com.google.protobuf.Any;

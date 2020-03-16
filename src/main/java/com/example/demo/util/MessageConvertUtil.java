@@ -1,7 +1,7 @@
 package com.example.demo.util;
 
-import com.ant.msger.base.dto.jt808.basics.Message;
-import com.ant.msger.base.message.MessageExternal;
+import com.antnest.msger.core.dto.jt808.basics.Message;
+import com.antnest.msger.core.message.MessageExternal;
 
 import java.util.Map;
 
