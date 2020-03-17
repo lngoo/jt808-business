@@ -3,7 +3,7 @@ package com.example.demo.sub;
 import com.antnest.msger.core.common.MessageId;
 import com.antnest.msger.core.dto.jt808.CommonResult;
 import com.antnest.msger.core.dto.jt808.IMMsg;
-import com.antnest.msger.core.message.MessageExternal;
+import com.antnest.msger.core.message.ChannelMessage;
 import com.antnest.msger.proto.ProtoMain;
 import com.example.demo.cache.Cache;
 import com.example.demo.util.LocalProtoBufUtil;
@@ -108,7 +108,7 @@ public class RequestIMSubscriber implements MessageListener {
             commonIMResponse(message1, mobileNum);
 
             // 发送消息给对应的机器
-            MessageExternal external = LocalProtoBufUtil.copyProtoBeanToMessageExternal(message1);
+            ChannelMessage external = LocalProtoBufUtil.copyProtoBeanToMessageExternal(message1);
 
             Map<String, Integer> protocolMap = new HashMap<>();
             protocolMap.put("Jt808", 0x7e);

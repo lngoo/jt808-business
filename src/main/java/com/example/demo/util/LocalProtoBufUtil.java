@@ -2,7 +2,7 @@ package com.example.demo.util;
 
 import com.antnest.msger.core.dto.jt808.*;
 import com.antnest.msger.core.message.AbstractBody;
-import com.antnest.msger.core.message.MessageExternal;
+import com.antnest.msger.core.message.ChannelMessage;
 import com.antnest.msger.proto.ProtoMain;
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
@@ -26,7 +26,7 @@ public class LocalProtoBufUtil {
         map.put(IMMsg.class.getSimpleName(), ProtoMain.IMMsg.newBuilder());
     }
 
-    public static ProtoMain.Message copyMessageExternalToProtoBean(MessageExternal messageExternal, ProtoMain.Message.Builder target) {
+    public static ProtoMain.Message copyMessageExternalToProtoBean(ChannelMessage messageExternal, ProtoMain.Message.Builder target) {
         AbstractBody body = messageExternal.getMsgBody();
         messageExternal.setMsgBody(null);
         ProtoMain.Message msgProto = ProtoBufUtil.copyJavaBeanToProtoBean(messageExternal, target);
@@ -39,7 +39,7 @@ public class LocalProtoBufUtil {
         return msgProto.toBuilder().setMsgBody(Any.pack(bodyProto)).build();
     }
 
-    public static MessageExternal copyProtoBeanToMessageExternal(ProtoMain.Message message) throws Exception {
+    public static ChannelMessage copyProtoBeanToMessageExternal(ProtoMain.Message message) throws Exception {
         Any bodyAny = message.getMsgBody();
 //        type.googleapis.com/RegisterResult
         String bodyClassName = bodyAny.getTypeUrl().replace("type.googleapis.com/", "");
@@ -49,7 +49,7 @@ public class LocalProtoBufUtil {
         AbstractBody body = (AbstractBody) ProtoBufUtil.copyProtoBeanToJavaBean(bodyProto, bodyInternalClass);
 
         message = message.toBuilder().clearMsgBody().build();
-        MessageExternal external = ProtoBufUtil.copyProtoBeanToJavaBean(message, MessageExternal.class);
+        ChannelMessage external = ProtoBufUtil.copyProtoBeanToJavaBean(message, ChannelMessage.class);
         external.setMsgBody(body);
 
         return external;
